@@ -774,7 +774,7 @@ async function extractDiscord(fileUrl) {
 // ============================================================
 
 async function extractInstagram(videoUrl) {
-    // Layer 1: yt-dlp (with cookies if available)
+    // Layer 1: yt-dlp (best option — requires cookies.txt for Instagram)
     try {
         const result = await extractYoutubeDL(videoUrl, "instagram");
         result.engine = "yt-dlp";
@@ -783,115 +783,21 @@ async function extractInstagram(videoUrl) {
         console.log(`  ⚠️ yt-dlp failed for Instagram: ${e.message}`);
     }
 
-    // Solution 3: Layer 2 — Snapinsta scraping
-    console.log("  📸 [Instagram] Layer 2: Snapinsta...");
+    // Layer 2: Cobalt API (universal fallback)
+    console.log("  📸 [Instagram] Layer 2: Cobalt API...");
     try {
-        const snapResp = await fetchWithTimeout("https://snapinsta.app/action2.php", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "User-Agent": USER_AGENT,
-                "Origin": "https://snapinsta.app",
-                "Referer": "https://snapinsta.app/",
-            },
-            body: `url=${encodeURIComponent(videoUrl)}`,
-        });
-
-        if (!snapResp.ok) throw new Error(`Snapinsta returned ${snapResp.status}`);
-        const snapHtml = await snapResp.text();
-
-        const snapFormats = [];
-        // Parse download links from Snapinsta HTML
-        const downloadLinks = [...snapHtml.matchAll(/href="(https?:\/\/[^"]+(?:cdninstagram|scontent|snapinsta)[^"]*)"/gi)];
-        downloadLinks.forEach((m, i) => {
-            const dlUrl = m[1].replace(/&amp;/g, '&');
-            const isVideo = dlUrl.includes('.mp4') || dlUrl.includes('video');
-            snapFormats.push({
-                type: isVideo ? "MP4" : "JPG",
-                quality: "Original",
-                url: dlUrl,
-                size: "ORIGINAL",
-                label: isVideo ? `Video ${i + 1}` : `Photo ${i + 1}`,
-            });
-        });
-
-        // Also try button-style links
-        if (snapFormats.length === 0) {
-            const btnLinks = [...snapHtml.matchAll(/<a[^>]+href="(https?:\/\/[^"]+)"[^>]*>\s*(?:Download|Video|Photo)/gi)];
-            btnLinks.forEach((m, i) => {
-                snapFormats.push({
-                    type: "MP4", quality: "Original",
-                    url: m[1].replace(/&amp;/g, '&'),
-                    size: "ORIGINAL",
-                    label: `Download ${i + 1}`,
-                });
-            });
-        }
-
-        if (snapFormats.length === 0) throw new Error("Snapinsta returned no media.");
-
-        return {
-            success: true,
-            platform: "instagram",
-            engine: "Snapinsta",
-            title: "Instagram Post",
-            author: { nickname: "Instagram User", unique_id: "instagram", avatar: "" },
-            cover: "",
-            stats: { play_count: 0, digg_count: 0, comment_count: 0, share_count: 0 },
-            downloads: snapFormats,
-        };
+        const result = await extractCobalt(videoUrl, "instagram");
+        return result;
     } catch (e) {
-        console.log(`  ⚠️ Snapinsta failed: ${e.message}`);
+        console.log(`  ⚠️ Cobalt failed for Instagram: ${e.message}`);
     }
 
-    // Layer 3: igram.world API
-    console.log("  📸 [Instagram] Layer 3: igram.world API...");
-    try {
-        const resp = await fetchWithTimeout("https://api.igram.world/api/convert", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                "User-Agent": USER_AGENT,
-            },
-            body: `url=${encodeURIComponent(videoUrl)}`,
-        });
-
-        if (!resp.ok) throw new Error(`igram returned ${resp.status}`);
-        const data = await resp.json();
-
-        const formats = [];
-        if (Array.isArray(data)) {
-            data.forEach((item, i) => {
-                const url = item.url || item.download_url;
-                if (!url) return;
-                const isVideo = (item.type || '').includes('video') || url.includes('.mp4');
-                formats.push({
-                    type: isVideo ? "MP4" : "JPG",
-                    quality: "Original",
-                    url,
-                    size: "ORIGINAL",
-                    label: isVideo ? `Video ${i + 1}` : `Photo ${i + 1}`,
-                });
-            });
-        }
-
-        if (formats.length === 0) throw new Error("igram returned no media.");
-
-        return {
-            success: true,
-            platform: "instagram",
-            engine: "igram API",
-            title: "Instagram Post",
-            author: { nickname: "Instagram User", unique_id: "instagram", avatar: "" },
-            cover: "",
-            stats: { play_count: 0, digg_count: 0, comment_count: 0, share_count: 0 },
-            downloads: formats,
-        };
-    } catch (e) {
-        console.log(`  ⚠️ igram failed: ${e.message}`);
-    }
-
-    throw new Error("Instagram extraction failed. Reels/private posts may require authentication.");
+    // All layers failed — provide actionable guidance
+    const hasCookies = HAS_COOKIES;
+    const errMsg = hasCookies
+        ? "Instagram extraction failed. Your cookies may be expired — try re-exporting cookies.txt from your browser."
+        : "Instagram requires authentication. Export cookies.txt from your browser (use a browser extension like 'Get cookies.txt LOCALLY') and place it in the project root folder.";
+    throw new Error(errMsg);
 }
 
 // ============================================================
@@ -1180,24 +1086,99 @@ app.post("/api/extract", async (req, res) => {
 
 app.get("/api/download", async (req, res) => {
     const mediaUrl = req.query.url;
+    const fmtHint = req.query.fmt; // optional: "mp4", "mp3", "webm", "jpg"
     if (!mediaUrl) return res.status(400).json({ error: "Missing url parameter" });
 
     try {
         const response = await fetchWithTimeout(mediaUrl, {
-            headers: { "User-Agent": USER_AGENT },
+            headers: {
+                "User-Agent": USER_AGENT,
+                "Referer": mediaUrl,
+                "Accept": "*/*",
+            },
         }, 30000);
 
         if (!response.ok) return res.status(response.status).json({ error: "Upstream error" });
 
         const contentType = response.headers.get("content-type") || "application/octet-stream";
-        let ext = "bin";
-        if (contentType.includes("mp4")) ext = "mp4";
-        if (contentType.includes("mpeg") || contentType.includes("mp3")) ext = "mp3";
-        if (contentType.includes("webm")) ext = "webm";
-        if (contentType.includes("image")) ext = "jpg";
 
-        res.setHeader("Content-Type", contentType);
-        res.setHeader("Content-Disposition", `attachment; filename="download_${Date.now()}.${ext}"`);
+        // --- Robust extension detection ---
+        // Priority 1: Frontend hint (most reliable — knows what format was selected)
+        // Priority 2: Detect from URL path extension
+        // Priority 3: Detect from content-type header
+        // Priority 4: Fallback to mp4 (most downloads are video)
+
+        let ext = null;
+
+        // Priority 1: Frontend format hint
+        if (fmtHint && /^(mp4|mp3|webm|mov|avi|mkv|jpg|jpeg|png|gif|webp|wav|ogg|flac|m4a)$/i.test(fmtHint)) {
+            ext = fmtHint.toLowerCase();
+        }
+
+        // Priority 2: Extract from URL path
+        if (!ext) {
+            try {
+                const urlPath = new URL(mediaUrl).pathname;
+                const urlExt = urlPath.split('.').pop()?.toLowerCase();
+                if (urlExt && /^(mp4|mp3|webm|mov|avi|mkv|jpg|jpeg|png|gif|webp|wav|ogg|flac|m4a)$/.test(urlExt)) {
+                    ext = urlExt;
+                }
+            } catch (_) { /* ignore URL parse errors */ }
+        }
+
+        // Priority 3: Content-Type mapping
+        if (!ext) {
+            const ctMap = {
+                "video/mp4": "mp4",
+                "video/webm": "webm",
+                "video/quicktime": "mov",
+                "video/x-msvideo": "avi",
+                "video/x-matroska": "mkv",
+                "audio/mpeg": "mp3",
+                "audio/mp3": "mp3",
+                "audio/mp4": "m4a",
+                "audio/ogg": "ogg",
+                "audio/wav": "wav",
+                "audio/x-wav": "wav",
+                "audio/flac": "flac",
+                "image/jpeg": "jpg",
+                "image/png": "png",
+                "image/gif": "gif",
+                "image/webp": "webp",
+            };
+            // Exact match first
+            const ctLower = contentType.split(';')[0].trim().toLowerCase();
+            if (ctMap[ctLower]) {
+                ext = ctMap[ctLower];
+            } else {
+                // Partial match fallback
+                if (contentType.includes("mp4") || contentType.includes("video")) ext = "mp4";
+                else if (contentType.includes("mpeg") || contentType.includes("mp3") || contentType.includes("audio")) ext = "mp3";
+                else if (contentType.includes("webm")) ext = "webm";
+                else if (contentType.includes("image")) ext = "jpg";
+            }
+        }
+
+        // Priority 4: Ultimate fallback — assume mp4 (most common download)
+        if (!ext) ext = "mp4";
+
+        // Set proper headers for download
+        const finalContentType = ext === "mp4" ? "video/mp4"
+            : ext === "mp3" ? "audio/mpeg"
+                : ext === "webm" ? "video/webm"
+                    : ext === "mov" ? "video/quicktime"
+                        : ext === "jpg" || ext === "jpeg" ? "image/jpeg"
+                            : ext === "png" ? "image/png"
+                                : ext === "gif" ? "image/gif"
+                                    : ext === "webp" ? "image/webp"
+                                        : contentType;
+
+        res.setHeader("Content-Type", finalContentType);
+        res.setHeader("Content-Disposition", `attachment; filename="zeroloader_${Date.now()}.${ext}"`);
+
+        // Forward content-length if available
+        const contentLength = response.headers.get("content-length");
+        if (contentLength) res.setHeader("Content-Length", contentLength);
 
         const reader = response.body.getReader();
         while (true) {

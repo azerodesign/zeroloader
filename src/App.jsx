@@ -513,55 +513,102 @@ function Dashboard() {
 
                         <div style={{ position: 'relative', marginBottom: '24px' }}>
                             <label style={{
-                                display: 'block', fontSize: '11px', fontWeight: 700, color: '#64748b',
-                                textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px',
+                                display: 'flex', alignItems: 'center', gap: '8px',
+                                fontSize: '11px', fontWeight: 700, color: '#64748b',
+                                textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px',
                                 marginLeft: '4px',
-                            }}>Target URL {platform && <span className="normal-case text-indigo-400 ml-2 border-l border-gray-700 pl-2 flex inline-flex items-center gap-1.5"><platform.icon size={14} className={platform.color} /> {platform.name} Detect</span>}</label>
+                            }}>
+                                <LinkIcon size={13} style={{ color: '#818cf8' }} />
+                                Enter or Paste URL
+                                {platform && (
+                                    <span style={{
+                                        display: 'inline-flex', alignItems: 'center', gap: '5px',
+                                        marginLeft: '8px', padding: '2px 10px', borderRadius: '99px',
+                                        background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)',
+                                        color: '#a5b4fc', fontSize: '10px', fontWeight: 700, textTransform: 'none',
+                                    }}>
+                                        <platform.icon size={12} className={platform.color} /> {platform.name}
+                                    </span>
+                                )}
+                            </label>
                             <div className="animated-border" style={{ position: 'relative' }}>
-                                <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', zIndex: 2 }}>
-                                    <LinkIcon size={18} />
-                                </div>
                                 <input
                                     type="text"
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
-                                    placeholder="https://..."
+                                    onKeyDown={(e) => { if (e.key === 'Enter' && url && !loading) handleProcess(); }}
+                                    placeholder="Type or paste a video URL here..."
+                                    autoComplete="off"
+                                    spellCheck="false"
                                     className="input-glow"
                                     style={{
-                                        width: '100%', padding: '16px 16px 16px 48px',
+                                        width: '100%', padding: '18px 110px 18px 20px',
                                         background: 'rgba(2, 6, 23, 0.6)',
                                         border: '1px solid rgba(255, 255, 255, 0.08)',
-                                        borderRadius: '12px', color: 'white', fontSize: '15px',
+                                        borderRadius: '14px', color: 'white', fontSize: '14px',
                                         outline: 'none', transition: 'all 0.3s ease',
-                                        fontFamily: "'JetBrains Mono', monospace",
+                                        fontFamily: "'Inter', system-ui, sans-serif",
+                                        letterSpacing: '-0.01em',
                                     }}
                                     onFocus={(e) => {
                                         e.target.style.borderColor = '#6366f1';
-                                        e.target.style.background = 'rgba(2, 6, 23, 0.8)';
-                                        e.target.style.boxShadow = '0 0 0 4px rgba(99,102,241,0.1)';
+                                        e.target.style.background = 'rgba(2, 6, 23, 0.85)';
+                                        e.target.style.boxShadow = '0 0 0 4px rgba(99,102,241,0.1), 0 8px 32px rgba(99,102,241,0.08)';
                                     }}
                                     onBlur={(e) => {
-                                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                                        e.target.style.background = 'rgba(2, 6, 23, 0.5)';
+                                        e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                                        e.target.style.background = 'rgba(2, 6, 23, 0.6)';
                                         e.target.style.boxShadow = 'none';
                                     }}
                                 />
-                                <button
-                                    onClick={handlePaste}
-                                    style={{
-                                        position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)',
-                                        padding: '4px 8px', borderRadius: '6px',
-                                        background: 'rgba(255,255,255,0.05)', color: '#94a3b8',
-                                        fontSize: '10px', fontWeight: 600, border: 'none', cursor: 'pointer',
-                                        transition: 'all 0.2s',
-                                    }}
-                                    onMouseOver={e => { e.currentTarget.style.color = 'white'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; }}
-                                    onMouseOut={e => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
-                                >
-                                    PASTE
-                                </button>
+                                {/* Right-side action buttons */}
+                                <div style={{
+                                    position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)',
+                                    display: 'flex', alignItems: 'center', gap: '6px',
+                                }}>
+                                    {url && (
+                                        <button
+                                            onClick={() => setUrl('')}
+                                            title="Clear"
+                                            style={{
+                                                width: '30px', height: '30px', borderRadius: '8px',
+                                                background: 'rgba(239,68,68,0.08)', color: '#f87171',
+                                                border: '1px solid rgba(239,68,68,0.15)', cursor: 'pointer',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                transition: 'all 0.2s',
+                                            }}
+                                            onMouseOver={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.15)'; }}
+                                            onMouseOut={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; }}
+                                        >
+                                            <XCircle size={14} />
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={handlePaste}
+                                        title="Paste from clipboard"
+                                        style={{
+                                            height: '30px', padding: '0 12px', borderRadius: '8px',
+                                            background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.12))',
+                                            color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.2)',
+                                            cursor: 'pointer', fontSize: '10px', fontWeight: 700,
+                                            display: 'flex', alignItems: 'center', gap: '5px',
+                                            transition: 'all 0.2s', letterSpacing: '0.04em',
+                                        }}
+                                        onMouseOver={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2))'; e.currentTarget.style.color = 'white'; }}
+                                        onMouseOut={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.12))'; e.currentTarget.style.color = '#a5b4fc'; }}
+                                    >
+                                        <Sparkles size={11} /> PASTE
+                                    </button>
+                                </div>
                             </div>
-                            <p className="text-gray-400 mt-2 font-medium text-xs ml-1">Paste any video/audio URL to extract (TikTok, YouTube, Twitter...)</p>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '8px', padding: '0 4px' }}>
+                                <p style={{ fontSize: '11px', color: '#475569', fontWeight: 500 }}>
+                                    Supports TikTok, YouTube, Twitter, Instagram, and 9+ more
+                                </p>
+                                <p style={{ fontSize: '10px', color: '#334155', fontWeight: 600 }}>
+                                    Press Enter ↵ to extract
+                                </p>
+                            </div>
                         </div>
 
                         <button
@@ -925,8 +972,8 @@ function DownloadCard({ fmt, index }) {
 
     return (
         <a
-            href={fmt.url === '#' ? '#' : `${API_BASE}/download?url=${encodeURIComponent(fmt.url)}`}
-            download={`zeroloader_${index}.${fmt.type === 'MP3' ? 'mp3' : 'mp4'}`}
+            href={fmt.url === '#' ? '#' : `${API_BASE}/download?url=${encodeURIComponent(fmt.url)}&fmt=${fmt.type === 'MP3' ? 'mp3' : fmt.type === 'JPG' ? 'jpg' : 'mp4'}`}
+            download={`zeroloader_${index}.${fmt.type === 'MP3' ? 'mp3' : fmt.type === 'JPG' ? 'jpg' : 'mp4'}`}
             onClick={(e) => { if (fmt.url === '#') e.preventDefault(); }}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
