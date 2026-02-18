@@ -10,3 +10,5 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 .env*.local
+
+cookies.txt
