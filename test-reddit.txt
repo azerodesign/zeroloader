@@ -1,0 +1,5 @@
+﻿{
+  "error": "d.fxtwitter returned no redirect.",
+  "details": "Please check if the content is public and the URL is correct.",
+  "platform": "twitter"
+}

@@ -41,19 +41,7 @@ import {
 const API_BASE = '/api';
 
 // --- SHARED STYLES ---
-const cardStyle = {
-    background: 'rgba(15, 23, 42, 0.65)',
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    borderRadius: '20px',
-    padding: '24px',
-};
-
-const cardStyleNoRadius = {
-    ...cardStyle,
-    borderRadius: undefined,
-};
+// Card styles now via CSS class "glass-card" in index.css
 
 // --- PLATFORM CONFIG ---
 const SUPPORTED_PLATFORMS = [
@@ -77,7 +65,7 @@ export default function App() {
     const [darkMode, setDarkMode] = useState(true);
 
     useEffect(() => {
-        const timer = setTimeout(() => setView('landing'), 2500);
+        const timer = setTimeout(() => setView('landing'), 1800);
         if (darkMode) document.documentElement.classList.add('dark');
         else document.documentElement.classList.remove('dark');
         return () => clearTimeout(timer);
@@ -87,13 +75,20 @@ export default function App() {
 
     return (
         <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}
-            className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-[#020617] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+            className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-[#030712] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
 
-            {/* Subtle dot grid background */}
+            {/* Mesh background */}
+            <div className="mesh-bg">
+                <div className="orb orb-1"></div>
+                <div className="orb orb-2"></div>
+                <div className="orb orb-3"></div>
+            </div>
+
+            {/* Dot grid */}
             <div className="fixed inset-0 pointer-events-none" style={{
-                opacity: 0.015,
+                opacity: 0.012,
                 backgroundImage: 'radial-gradient(circle, #6366f1 1px, transparent 1px)',
-                backgroundSize: '30px 30px',
+                backgroundSize: '32px 32px',
             }}></div>
 
             <Navbar view={view} setView={setView} darkMode={darkMode} setDarkMode={setDarkMode} />
@@ -169,51 +164,67 @@ function Navbar({ view, setView, darkMode, setDarkMode }) {
 function SplashScreen() {
     return (
         <div style={{
-            position: 'fixed', inset: 0, background: '#020617',
+            position: 'fixed', inset: 0, background: '#030712',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             zIndex: 100,
         }}>
-            <div style={{ position: 'relative', animation: 'float 3s ease-in-out infinite' }}>
+            {/* Mesh BG */}
+            <div className="mesh-bg">
+                <div className="orb orb-1"></div>
+                <div className="orb orb-2"></div>
+            </div>
+
+            <div style={{ position: 'relative' }} className="float-anim">
+                {/* Outer pulsing ring */}
                 <div style={{
-                    position: 'absolute', inset: 0, background: '#6366f1',
-                    filter: 'blur(40px)', opacity: 0.2, borderRadius: '50%', transform: 'scale(1.5)',
-                }}></div>
+                    position: 'absolute', inset: '-24px', borderRadius: '50%',
+                    border: '1px solid rgba(99,102,241,0.15)',
+                }} className="glow-ring"></div>
+                {/* Inner pulsing ring */}
+                <div style={{
+                    position: 'absolute', inset: '-12px', borderRadius: '50%',
+                    border: '1px solid rgba(168,85,247,0.1)',
+                }} className="pulse-glow"></div>
+                {/* Icon */}
                 <div style={{
                     position: 'relative',
-                    background: 'linear-gradient(135deg, #6366f1, #9333ea)',
-                    padding: '16px', borderRadius: '20px',
-                    boxShadow: '0 20px 50px rgba(99,102,241,0.3)',
+                    background: 'linear-gradient(135deg, #4f46e5, #7c3aed, #9333ea)',
+                    padding: '20px', borderRadius: '24px',
+                    boxShadow: '0 20px 60px rgba(99,102,241,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
                 }}>
-                    <Zap size={48} className="text-white" />
+                    <Zap size={44} className="text-white" style={{ filter: 'drop-shadow(0 2px 8px rgba(255,255,255,0.3))' }} />
                 </div>
             </div>
+
             <h1 style={{
-                marginTop: '32px', fontSize: '24px', fontWeight: 800, color: 'white',
-                letterSpacing: '0.15em', textTransform: 'uppercase',
+                marginTop: '36px', fontSize: '26px', fontWeight: 900, color: 'white',
+                letterSpacing: '0.12em', textTransform: 'uppercase',
             }}>
-                Zero<span style={{
-                    background: 'linear-gradient(135deg, #6366f1, #a855f7)',
-                    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                }}>Loader</span>
+                Zero<span className="gradient-text" style={{ letterSpacing: '0.12em' }}>Loader</span>
                 <span style={{
                     fontSize: '10px', verticalAlign: 'top',
-                    background: 'rgba(99,102,241,0.3)', color: '#c4b5fd',
-                    padding: '2px 8px', borderRadius: '6px', marginLeft: '8px',
-                    letterSpacing: 'normal',
+                    background: 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3))',
+                    color: '#c4b5fd', padding: '2px 10px', borderRadius: '8px', marginLeft: '10px',
+                    letterSpacing: 'normal', fontWeight: 700,
+                    border: '1px solid rgba(99,102,241,0.2)',
                 }}>V7</span>
             </h1>
+
             <div style={{
-                marginTop: '24px', width: '180px', height: '3px',
-                background: '#1e293b', borderRadius: '99px', overflow: 'hidden',
+                marginTop: '28px', width: '200px', height: '3px',
+                background: 'rgba(30, 41, 59, 0.6)', borderRadius: '99px', overflow: 'hidden',
             }}>
                 <div style={{
                     height: '100%',
-                    background: 'linear-gradient(90deg, #6366f1, #a855f7)',
+                    background: 'linear-gradient(90deg, #4f46e5, #a855f7, #ec4899)',
                     borderRadius: '99px',
-                    animation: 'loading 2.5s ease-in-out forwards',
+                    animation: 'loading 1.8s ease-in-out forwards',
                 }}></div>
             </div>
-            <p style={{ marginTop: '12px', fontSize: '10px', color: '#475569', letterSpacing: '0.1em' }}>
+            <p style={{
+                marginTop: '14px', fontSize: '10px', color: '#475569',
+                letterSpacing: '0.15em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
+            }}>
                 INITIALIZING ENGINE...
             </p>
         </div>
@@ -223,73 +234,98 @@ function SplashScreen() {
 // --- LANDING PAGE ---
 function LandingPage({ onLaunch }) {
     return (
-        <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
-            <section style={{ position: 'relative', overflow: 'hidden', paddingTop: '100px', paddingBottom: '140px' }}>
-                {/* Background orbs */}
-                <div style={{ position: 'absolute', top: '40px', left: '10%', width: '400px', height: '400px', background: 'rgba(168,85,247,0.06)', borderRadius: '50%', filter: 'blur(100px)', pointerEvents: 'none' }}></div>
-                <div style={{ position: 'absolute', bottom: '40px', right: '10%', width: '500px', height: '500px', background: 'rgba(99,102,241,0.06)', borderRadius: '50%', filter: 'blur(100px)', pointerEvents: 'none' }}></div>
+        <div className="fade-in">
+            <section style={{ position: 'relative', overflow: 'hidden', paddingTop: '80px', paddingBottom: '120px' }}>
+                {/* Mesh background */}
+                <div className="mesh-bg">
+                    <div className="orb orb-1"></div>
+                    <div className="orb orb-2"></div>
+                    <div className="orb orb-3"></div>
+                </div>
 
                 <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 20px', textAlign: 'center', position: 'relative', zIndex: 10 }}>
                     {/* Badge */}
-                    <div style={{
+                    <div className="slide-up badge-gradient" style={{
                         display: 'inline-flex', alignItems: 'center', gap: '8px',
-                        padding: '8px 16px', borderRadius: '99px',
-                        background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(168,85,247,0.08))',
-                        border: '1px solid rgba(99,102,241,0.2)',
+                        padding: '8px 18px', borderRadius: '99px',
                         color: '#818cf8', fontSize: '12px', fontWeight: 600,
                         marginBottom: '40px',
                     }}>
-                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4ade80', animation: 'pulse 2s ease-in-out infinite' }}></span>
-                        Multi-Engine API Online
+                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4ade80' }} className="pulse-glow"></span>
+                        Multi-Engine API Online • 13 Platforms
                     </div>
 
                     {/* Heading */}
-                    <h1 style={{
-                        fontSize: 'clamp(40px, 6vw, 72px)',
-                        fontWeight: 900, letterSpacing: '-0.03em',
-                        lineHeight: 1.1, marginBottom: '24px',
+                    <h1 className="slide-up-delay-1" style={{
+                        fontSize: 'clamp(42px, 6vw, 76px)',
+                        fontWeight: 900, letterSpacing: '-0.04em',
+                        lineHeight: 1.05, marginBottom: '24px',
                     }}>
                         All in One<br />
-                        <span style={{
-                            background: 'linear-gradient(135deg, #6366f1, #a855f7, #6366f1)',
-                            backgroundSize: '200% 200%',
-                            animation: 'gradient-shift 3s ease infinite',
-                            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                        }}>Downloader</span>
+                        <span className="gradient-text">Downloader</span>
                     </h1>
 
                     {/* Subtitle */}
-                    <p style={{ fontSize: '18px', color: '#64748b', maxWidth: '440px', margin: '0 auto 48px', lineHeight: 1.6 }}>
+                    <p className="slide-up-delay-2" style={{
+                        fontSize: '18px', color: '#64748b', maxWidth: '450px',
+                        margin: '0 auto 48px', lineHeight: 1.7, fontWeight: 500,
+                    }}>
                         Extract HD video & audio instantly.<br />
                         Fast. Clean. No limits.
                     </p>
 
-                    {/* CTA */}
-                    <button onClick={onLaunch} style={{
-                        display: 'inline-flex', alignItems: 'center', gap: '12px',
-                        padding: '16px 32px',
-                        background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                        color: 'white', borderRadius: '14px', fontWeight: 700,
-                        fontSize: '17px', border: 'none', cursor: 'pointer',
-                        boxShadow: '0 20px 50px rgba(99,102,241,0.3)',
-                        transition: 'all 0.3s ease',
-                    }}
-                        onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.03)'; e.currentTarget.style.boxShadow = '0 25px 60px rgba(99,102,241,0.4)'; }}
-                        onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 20px 50px rgba(99,102,241,0.3)'; }}
-                    >
-                        <Zap size={20} /> Start Engine <ArrowRight size={18} />
-                    </button>
+                    {/* CTA Button */}
+                    <div className="slide-up-delay-3">
+                        <button onClick={onLaunch} className="shimmer-button" style={{
+                            display: 'inline-flex', alignItems: 'center', gap: '12px',
+                            padding: '18px 40px',
+                            background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                            color: 'white', borderRadius: '16px', fontWeight: 700,
+                            fontSize: '17px', border: 'none', cursor: 'pointer',
+                            boxShadow: '0 20px 60px rgba(99,102,241,0.35)',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            position: 'relative',
+                        }}
+                            onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.04) translateY(-2px)'; e.currentTarget.style.boxShadow = '0 28px 70px rgba(99,102,241,0.45)'; }}
+                            onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 20px 60px rgba(99,102,241,0.35)'; }}
+                        >
+                            <Zap size={20} /> Start Engine <ArrowRight size={18} />
+                        </button>
+                    </div>
 
                     {/* Feature pills */}
-                    <div style={{ marginTop: '56px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '12px' }}>
-                        {['HD Quality', 'No Watermark', 'MP3 Audio', 'Fast API'].map((feat, i) => (
-                            <div key={i} style={{
+                    <div style={{ marginTop: '56px', display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '10px' }}>
+                        {['HD Quality', 'No Watermark', 'MP3 Audio', 'Fast API', '13+ Platforms'].map((feat, i) => (
+                            <div key={i} className={`stagger-item stagger-${i + 1}`} style={{
                                 padding: '8px 16px', borderRadius: '99px',
-                                fontSize: '12px', fontWeight: 500,
-                                ...cardStyle, display: 'flex', alignItems: 'center', gap: '6px',
+                                fontSize: '12px', fontWeight: 600,
+                                background: 'rgba(15, 23, 42, 0.6)',
+                                backdropFilter: 'blur(12px)',
+                                border: '1px solid rgba(255, 255, 255, 0.06)',
+                                display: 'flex', alignItems: 'center', gap: '6px',
                                 color: '#94a3b8',
                             }}>
                                 <CheckCircle2 size={12} style={{ color: '#4ade80' }} /> {feat}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Platform icon strip */}
+                    <div style={{
+                        marginTop: '48px', display: 'flex', justifyContent: 'center', gap: '16px',
+                        flexWrap: 'wrap', opacity: 0.5,
+                    }}>
+                        {SUPPORTED_PLATFORMS.slice(0, 8).map((p, i) => (
+                            <div key={p.id} className={`stagger-item stagger-${(i % 5) + 1}`} style={{
+                                padding: '8px', borderRadius: '10px',
+                                background: 'rgba(255,255,255,0.03)',
+                                border: '1px solid rgba(255,255,255,0.05)',
+                                transition: 'all 0.3s ease',
+                            }}
+                                onMouseOver={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                                onMouseOut={e => { e.currentTarget.style.opacity = ''; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.transform = ''; }}
+                            >
+                                <p.icon size={18} className={p.color} />
                             </div>
                         ))}
                     </div>
@@ -462,12 +498,12 @@ function Dashboard() {
     };
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px', animation: 'fadeIn 0.4s ease-out' }}>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }} className="fade-in">
+            <div className="dashboard-grid">
                 {/* Left Column - Input & Status */}
-                <div className="lg:col-span-2 flex flex-col gap-6">
+                <div className="flex flex-col gap-6">
                     {/* Input Card */}
-                    <div style={{ ...cardStyle }}>
+                    <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                         <CardHeader
                             icon={<Terminal size={20} className="text-white" />}
                             title="Console"
@@ -481,8 +517,8 @@ function Dashboard() {
                                 textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px',
                                 marginLeft: '4px',
                             }}>Target URL {platform && <span className="normal-case text-indigo-400 ml-2 border-l border-gray-700 pl-2 flex inline-flex items-center gap-1.5"><platform.icon size={14} className={platform.color} /> {platform.name} Detect</span>}</label>
-                            <div style={{ position: 'relative' }}>
-                                <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }}>
+                            <div className="animated-border" style={{ position: 'relative' }}>
+                                <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#64748b', zIndex: 2 }}>
                                     <LinkIcon size={18} />
                                 </div>
                                 <input
@@ -490,13 +526,14 @@ function Dashboard() {
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
                                     placeholder="https://..."
+                                    className="input-glow"
                                     style={{
                                         width: '100%', padding: '16px 16px 16px 48px',
-                                        background: 'rgba(2, 6, 23, 0.5)',
-                                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                                        background: 'rgba(2, 6, 23, 0.6)',
+                                        border: '1px solid rgba(255, 255, 255, 0.08)',
                                         borderRadius: '12px', color: 'white', fontSize: '15px',
-                                        outline: 'none', transition: 'all 0.2s ease',
-                                        fontFamily: 'monospace',
+                                        outline: 'none', transition: 'all 0.3s ease',
+                                        fontFamily: "'JetBrains Mono', monospace",
                                     }}
                                     onFocus={(e) => {
                                         e.target.style.borderColor = '#6366f1';
@@ -530,18 +567,20 @@ function Dashboard() {
                         <button
                             onClick={handleProcess}
                             disabled={loading || !url}
+                            className={!loading && url ? 'shimmer-button' : ''}
                             style={{
                                 width: '100%', padding: '16px',
                                 background: loading || !url
-                                    ? 'linear-gradient(135deg, rgba(79, 70, 229, 0.2), rgba(124, 58, 237, 0.2))'
+                                    ? 'linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(124, 58, 237, 0.15))'
                                     : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                                 color: loading || !url ? 'rgba(255,255,255,0.3)' : 'white',
-                                borderRadius: '12px', fontSize: '15px', fontWeight: 700,
+                                borderRadius: '14px', fontSize: '15px', fontWeight: 700,
                                 border: 'none', cursor: loading || !url ? 'not-allowed' : 'pointer',
                                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                boxShadow: loading || !url ? 'none' : '0 10px 30px -10px rgba(99,102,241,0.6)',
+                                boxShadow: loading || !url ? 'none' : '0 10px 40px -10px rgba(99,102,241,0.5)',
                                 position: 'relative', overflow: 'hidden',
+                                letterSpacing: '0.02em',
                             }}
                         >
                             {loading ? (
@@ -559,7 +598,7 @@ function Dashboard() {
                     </div>
 
                     {/* Activity Logs Panel */}
-                    <div style={{ ...cardStyle }}>
+                    <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                         <CardHeader
                             icon={<Activity size={18} className="text-indigo-400" />}
                             title="Activity Logs"
@@ -611,7 +650,7 @@ function Dashboard() {
                     {data && (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.5s ease-out' }}>
                             {/* Video Info Card */}
-                            <div style={{ ...cardStyle }}>
+                            <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                                 <div style={{
                                     height: '140px', position: 'relative',
                                     borderRadius: '16px 16px 0 0', overflow: 'hidden'
@@ -732,7 +771,7 @@ function Dashboard() {
                             </div>
 
                             {/* DEDICATED DOWNLOAD SECTION */}
-                            <div style={{ ...cardStyle }}>
+                            <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                                 <CardHeader
                                     icon={<Download size={20} className="text-green-400" />}
                                     title="Download Section"
@@ -757,7 +796,7 @@ function Dashboard() {
                 {/* Right Column - System Info */}
                 <div className="flex flex-col gap-6">
                     {/* Dynamic Engine Info Card */}
-                    <div style={{ ...cardStyle }}>
+                    <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                         <CardHeader
                             icon={<Cpu size={18} className="text-blue-400" />}
                             title="Engine Info"
@@ -779,7 +818,7 @@ function Dashboard() {
                     </div>
 
                     {/* System Status */}
-                    <div style={{ ...cardStyle }}>
+                    <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                         <CardHeader
                             icon={<Activity size={18} className="text-indigo-400" />}
                             title="System Status"
@@ -793,15 +832,15 @@ function Dashboard() {
                     </div>
 
                     {/* Platforms */}
-                    <div style={{ ...cardStyle }}>
+                    <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                         <CardHeader
                             icon={<Sparkles size={18} className="text-purple-400" />}
                             title="Platforms"
                         />
-                        <div className="grid grid-cols-2 gap-3">
+                        <div className="grid grid-cols-3 gap-2">
                             {SUPPORTED_PLATFORMS.map((p) => (
                                 <div key={p.id}
-                                    className={`text-xs flex items-center gap-1.5 transition-all duration-300 p-1.5 rounded-lg border ${platform?.id === p.id
+                                    className={`text-[11px] flex items-center gap-1.5 transition-all duration-300 p-1.5 rounded-lg border ${platform?.id === p.id
                                         ? 'bg-blue-500/10 border-blue-500/30 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]'
                                         : 'border-transparent text-gray-400'
                                         }`}
@@ -815,7 +854,7 @@ function Dashboard() {
                     </div>
 
                     {/* Recent Activity Card */}
-                    <div style={{ ...cardStyle }}>
+                    <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <CardHeader
                                 icon={<Activity size={18} className="text-gray-400" />}
@@ -891,23 +930,22 @@ function DownloadCard({ fmt, index }) {
             onClick={(e) => { if (fmt.url === '#') e.preventDefault(); }}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
+            className="download-card"
             style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '12px 14px',
-                background: hover ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.015)',
+                padding: '14px 16px',
+                background: hover ? 'rgba(255,255,255,0.035)' : 'rgba(255,255,255,0.015)',
                 border: `1px solid ${hover ? colors.border : 'rgba(255,255,255,0.05)'}`,
                 borderRadius: '14px', textDecoration: 'none', color: 'inherit',
-                transition: 'all 0.25s ease',
-                transform: hover ? 'translateX(4px)' : 'none',
-                boxShadow: hover ? `0 4px 20px rgba(99,102,241,0.08)` : 'none',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             }}
         >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
+                <div className="dl-icon" style={{
                     width: '40px', height: '40px', borderRadius: '10px',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: hover ? colors.hover : colors.bg,
-                    color: colors.text, transition: 'all 0.25s ease',
+                    color: colors.text, transition: 'all 0.3s ease',
                 }}>
                     {fmt.type === 'MP3' ? <Headphones size={18} /> : <Film size={18} />}
                 </div>

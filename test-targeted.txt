@@ -1,0 +1,3 @@
+﻿FAIL Reddit error="d.fxtwitter returned no redirect."
+FAIL Pinterest error="d.fxtwitter returned no redirect."
+FAIL Dailymotion error="youtube-dl failed: ERROR: [dailymotion] x8m8m1i: Not found."

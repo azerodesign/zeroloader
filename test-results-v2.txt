@@ -1,0 +1,78 @@
+﻿=== ZEROLOADER FULL TEST SUITE V2 ===
+Time: 2026-02-18T11:10:25.606Z
+
+--- YOUTUBE ---
+[PASS] YouTube: Rick Astley (5842ms): title="Rick Astley - Never Gonna Give You Up (Official Vi" engine=yt-dlp formats=31
+[PASS] YouTube: Gangnam Style (short URL) (4668ms): title="PSY - GANGNAM STYLE(Ω░òδé¿∞èñφâÇ∞¥╝) M/V" engine=yt-dlp formats=27
+--- SOUNDCLOUD ---
+[PASS] SoundCloud: Rick Astley (5057ms): title="Never Gonna Give You Up" engine=yt-dlp formats=1
+--- TIKTOK ---
+[FAIL] TikTok: Official (25305ms): youtube-dl failed: ERROR: [TikTok] 7456327867137398058: Your IP address is blocked from accessing this post
+--- TWITTER/X ---
+[FAIL] Twitter: NASA (7456ms): d.fxtwitter returned no redirect.
+--- INSTAGRAM ---
+[FAIL] Instagram: Post (8127ms): Instagram extraction failed. Reels/private posts may require authentication.
+--- FACEBOOK ---
+[FAIL] Facebook: Reel (8822ms): Facebook extraction failed. Try using a direct video URL.
+--- DISCORD ---
+[FAIL] Discord: CDN (fake) (60ms): Discord file not accessible: Discord CDN returned 404
+--- VIMEO ---
+[PASS] Vimeo: Video (8363ms): title="The New Vimeo Player (You Know, For Videos)" engine=yt-dlp formats=14
+--- REDDIT ---
+[FAIL] Reddit: Post (4687ms): youtube-dl failed: ERROR: [Reddit] 1irjz2y: Unable to download JSON metadata: HTTP Error 404: Not Found (caused by <HTTP
+--- DAILYMOTION ---
+[FAIL] Dailymotion: Video (4324ms): youtube-dl failed: ERROR: [dailymotion] x8m8m1i: Not found.
+--- PINTEREST ---
+[FAIL] Pinterest: Pin (4363ms): youtube-dl failed: ERROR: [Pinterest] 1234567890: Unable to download JSON metadata: HTTP Error 404: Not Found (caused by
+--- TWITCH ---
+[FAIL] Twitch: VOD (4432ms): youtube-dl failed: ERROR: [twitch:vod] 2364215498: Video 2364215498 does not exist
+--- TUMBLR ---
+[PASS] Tumblr: Staff blog (9798ms): title="@staff (1)" engine=yt-dlp formats=1
+--- EDGE CASES ---
+[FAIL] Edge: Invalid URL (4ms): Invalid URL. Please provide a valid http or https link.
+[FAIL] Edge: Unknown platform (44465ms): youtube-dl failed: ERROR: [generic] Unable to download webpage: (<HTTPSConnection(host='www.unknownsite.xyz', port=443) 
+[FAIL] Edge: Empty URL (3ms): URL is required
+
+==========================================
+            TEST RESULTS SUMMARY          
+==========================================
+Total: 17 | Passed: 5 | Failed: 12
+Total time: 145.8s
+
+PASSED:
+  Γ£à YouTube: Rick Astley (engine=yt-dlp, formats=31, 5842ms)
+  Γ£à YouTube: Gangnam Style (short URL) (engine=yt-dlp, formats=27, 4668ms)
+  Γ£à SoundCloud: Rick Astley (engine=yt-dlp, formats=1, 5057ms)
+  Γ£à Vimeo: Video (engine=yt-dlp, formats=14, 8363ms)
+  Γ£à Tumblr: Staff blog (engine=yt-dlp, formats=1, 9798ms)
+
+FAILED:
+  Γ¥î TikTok: Official (25305ms): youtube-dl failed: ERROR: [TikTok] 7456327867137398058: Your IP address is blocked from accessing th
+  Γ¥î Twitter: NASA (7456ms): d.fxtwitter returned no redirect.
+  Γ¥î Instagram: Post (8127ms): Instagram extraction failed. Reels/private posts may require authentication.
+  Γ¥î Facebook: Reel (8822ms): Facebook extraction failed. Try using a direct video URL.
+  Γ¥î Discord: CDN (fake) (60ms): Discord file not accessible: Discord CDN returned 404
+  Γ¥î Reddit: Post (4687ms): youtube-dl failed: ERROR: [Reddit] 1irjz2y: Unable to download JSON metadata: HTTP Error 404: Not Fo
+  Γ¥î Dailymotion: Video (4324ms): youtube-dl failed: ERROR: [dailymotion] x8m8m1i: Not found.
+  Γ¥î Pinterest: Pin (4363ms): youtube-dl failed: ERROR: [Pinterest] 1234567890: Unable to download JSON metadata: HTTP Error 404: 
+  Γ¥î Twitch: VOD (4432ms): youtube-dl failed: ERROR: [twitch:vod] 2364215498: Video 2364215498 does not exist
+  Γ¥î Edge: Invalid URL (4ms): Invalid URL. Please provide a valid http or https link.
+  Γ¥î Edge: Unknown platform (44465ms): youtube-dl failed: ERROR: [generic] Unable to download webpage: (<HTTPSConnection(host='www.unknowns
+  Γ¥î Edge: Empty URL (3ms): URL is required
+
+Pass rate: 29%
+
+≡ƒöÆ Auth required: 1
+   - Instagram: Post
+ΓÜÖ∩╕Å Other failures: 11
+   - TikTok: Official: youtube-dl failed: ERROR: [TikTok] 7456327867137398058: Your IP address is block
+   - Twitter: NASA: d.fxtwitter returned no redirect.
+   - Facebook: Reel: Facebook extraction failed. Try using a direct video URL.
+   - Discord: CDN (fake): Discord file not accessible: Discord CDN returned 404
+   - Reddit: Post: youtube-dl failed: ERROR: [Reddit] 1irjz2y: Unable to download JSON metadata: HT
+   - Dailymotion: Video: youtube-dl failed: ERROR: [dailymotion] x8m8m1i: Not found.
+   - Pinterest: Pin: youtube-dl failed: ERROR: [Pinterest] 1234567890: Unable to download JSON metada
+   - Twitch: VOD: youtube-dl failed: ERROR: [twitch:vod] 2364215498: Video 2364215498 does not exi
+   - Edge: Invalid URL: Invalid URL. Please provide a valid http or https link.
+   - Edge: Unknown platform: youtube-dl failed: ERROR: [generic] Unable to download webpage: (<HTTPSConnectio
+   - Edge: Empty URL: URL is required

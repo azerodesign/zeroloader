@@ -1,0 +1,12 @@
+﻿=== TARGETED TESTS WITH FRESH URLS ===
+--- TWITTER (video tweet) ---
+CRASH Twitter SpaceX video (120ms) fetch failed
+--- REDDIT ---
+CRASH Reddit r/videos (6ms) fetch failed
+--- DAILYMOTION ---
+CRASH Dailymotion: Blender (5ms) fetch failed
+--- PINTEREST ---
+CRASH Pinterest: real pin (4ms) fetch failed
+--- TWITCH ---
+CRASH Twitch: VOD (5ms) fetch failed
+=== DONE ===
