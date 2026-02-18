@@ -29,7 +29,12 @@ import {
     Instagram,
     Youtube,
     Video,
-    Music4
+    Music4,
+    MessageSquare,
+    Globe,
+    Pin,
+    Tv,
+    Radio
 } from 'lucide-react';
 
 // --- CONFIGURATION ---
@@ -58,6 +63,13 @@ const SUPPORTED_PLATFORMS = [
     { id: 'twitter', name: 'Twitter/X', icon: Twitter, color: 'text-blue-400' },
     { id: 'facebook', name: 'Facebook', icon: Facebook, color: 'text-blue-600' },
     { id: 'soundcloud', name: 'SoundCloud', icon: Music, color: 'text-orange-500' },
+    { id: 'discord', name: 'Discord', icon: MessageSquare, color: 'text-indigo-400' },
+    { id: 'vimeo', name: 'Vimeo', icon: Film, color: 'text-cyan-400' },
+    { id: 'reddit', name: 'Reddit', icon: Globe, color: 'text-orange-400' },
+    { id: 'dailymotion', name: 'Dailymotion', icon: Tv, color: 'text-blue-300' },
+    { id: 'pinterest', name: 'Pinterest', icon: Pin, color: 'text-red-400' },
+    { id: 'twitch', name: 'Twitch', icon: Radio, color: 'text-purple-400' },
+    { id: 'tumblr', name: 'Tumblr', icon: Globe, color: 'text-blue-400' },
 ];
 
 export default function App() {
@@ -228,7 +240,7 @@ function LandingPage({ onLaunch }) {
                         marginBottom: '40px',
                     }}>
                         <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4ade80', animation: 'pulse 2s ease-in-out infinite' }}></span>
-                        TikWM API Engine Online
+                        Multi-Engine API Online
                     </div>
 
                     {/* Heading */}
@@ -341,6 +353,20 @@ function Dashboard() {
             detected = SUPPORTED_PLATFORMS.find(p => p.id === 'facebook');
         } else if (lowerUrl.includes('soundcloud.com')) {
             detected = SUPPORTED_PLATFORMS.find(p => p.id === 'soundcloud');
+        } else if (lowerUrl.includes('discord.com') || lowerUrl.includes('discordapp.com') || lowerUrl.includes('discordapp.net')) {
+            detected = SUPPORTED_PLATFORMS.find(p => p.id === 'discord');
+        } else if (lowerUrl.includes('vimeo.com')) {
+            detected = SUPPORTED_PLATFORMS.find(p => p.id === 'vimeo');
+        } else if (lowerUrl.includes('reddit.com') || lowerUrl.includes('redd.it')) {
+            detected = SUPPORTED_PLATFORMS.find(p => p.id === 'reddit');
+        } else if (lowerUrl.includes('dailymotion.com') || lowerUrl.includes('dai.ly')) {
+            detected = SUPPORTED_PLATFORMS.find(p => p.id === 'dailymotion');
+        } else if (lowerUrl.includes('pinterest.com') || lowerUrl.includes('pin.it')) {
+            detected = SUPPORTED_PLATFORMS.find(p => p.id === 'pinterest');
+        } else if (lowerUrl.includes('twitch.tv')) {
+            detected = SUPPORTED_PLATFORMS.find(p => p.id === 'twitch');
+        } else if (lowerUrl.includes('tumblr.com')) {
+            detected = SUPPORTED_PLATFORMS.find(p => p.id === 'tumblr');
         } else {
             detected = { id: 'generic', name: 'Generic Video', icon: Video, color: 'text-gray-400' };
         }
@@ -373,8 +399,9 @@ function Dashboard() {
             }
             await wait(800);
 
-            // Determine engine (simulation for UI feedback)
-            const engineName = platform?.id === 'tiktok' ? 'TikWM API' : 'yt-dlp Engine';
+            // Determine engine (dynamic based on platform)
+            const engineMap = { tiktok: 'TikWM → TikCDN → yt-dlp', twitter: 'yt-dlp → FixTweet', discord: 'CDN Direct', instagram: 'yt-dlp → igram', facebook: 'yt-dlp → og:video' };
+            const engineName = engineMap[platform?.id] || 'yt-dlp Engine';
             addLog(`[INFO] Routing request via ${engineName}...`);
             await wait(700);
 
@@ -679,7 +706,17 @@ function Dashboard() {
                                             <div style={{ fontSize: '13px', fontWeight: 700, color: 'white' }}>{data.author.nickname || 'Unknown Author'}</div>
                                             <div style={{ fontSize: '11px', color: '#64748b' }}>@{data.author.unique_id}</div>
                                         </div>
-                                        <a href={`https://www.tiktok.com/@${data.author.unique_id}`} target="_blank" rel="noopener noreferrer" style={{
+                                        <a href={(() => {
+                                            const uid = data.author.unique_id;
+                                            const pid = data.platform || platform?.id;
+                                            if (pid === 'tiktok') return `https://www.tiktok.com/@${uid}`;
+                                            if (pid === 'youtube') return `https://www.youtube.com/@${uid}`;
+                                            if (pid === 'twitter') return `https://x.com/${uid}`;
+                                            if (pid === 'instagram') return `https://www.instagram.com/${uid}`;
+                                            if (pid === 'soundcloud') return `https://soundcloud.com/${uid}`;
+                                            if (pid === 'twitch') return `https://www.twitch.tv/${uid}`;
+                                            return '#';
+                                        })()} target="_blank" rel="noopener noreferrer" style={{
                                             padding: '6px 12px', borderRadius: '8px', background: 'rgba(99,102,241,0.1)',
                                             color: '#818cf8', textDecoration: 'none', fontSize: '11px', fontWeight: 700,
                                             display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s',
@@ -733,7 +770,7 @@ function Dashboard() {
                             />
                             <InfoRow
                                 label="Active Engine"
-                                value={platform?.id === 'tiktok' ? 'TikWM API' : platform?.id ? 'yt-dlp Engine' : 'Idle'}
+                                value={data?.engine || (platform?.id === 'tiktok' ? 'TikWM Chain' : platform?.id === 'discord' ? 'CDN Direct' : platform?.id ? 'yt-dlp Engine' : 'Idle')}
                             />
                             <InfoRow label="Mode" value="Direct Extract" />
                             <InfoRow label="Quality" value="HD No-WM" />
@@ -748,9 +785,9 @@ function Dashboard() {
                             title="System Status"
                         />
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                            <StatusItem label="TikWM API" status="operational" />
+                            <StatusItem label="Multi-Engine API" status="operational" />
                             <StatusItem label="Download Proxy" status="operational" />
-                            <StatusItem label="Backend API" status="operational" />
+                            <StatusItem label="Fallback Chain" status="operational" />
                             <StatusItem label="Platform Detector" status="operational" />
                         </div>
                     </div>
