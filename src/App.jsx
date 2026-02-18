@@ -109,7 +109,7 @@ function Navbar({ view, setView, darkMode, setDarkMode }) {
             WebkitBackdropFilter: 'blur(24px)',
             background: 'rgba(2, 6, 23, 0.7)',
         }}>
-            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }} className="mobile-padding-sm">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '56px' }}>
                     {/* Logo */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => setView('landing')}>
@@ -143,7 +143,7 @@ function Navbar({ view, setView, darkMode, setDarkMode }) {
                             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
                         </button>
                         {view === 'landing' && (
-                            <button onClick={() => setView('dashboard')} style={{
+                            <button onClick={() => setView('dashboard')} className="mobile-hidden" style={{
                                 background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
                                 color: 'white', padding: '8px 16px', borderRadius: '10px',
                                 fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '13px',
@@ -235,7 +235,7 @@ function SplashScreen() {
 function LandingPage({ onLaunch }) {
     return (
         <div className="fade-in">
-            <section style={{ position: 'relative', overflow: 'hidden', paddingTop: '80px', paddingBottom: '120px' }}>
+            <section style={{ position: 'relative', overflow: 'hidden', paddingTop: '80px', paddingBottom: '120px' }} className="mobile-padding-sm">
                 {/* Mesh background */}
                 <div className="mesh-bg">
                     <div className="orb orb-1"></div>
@@ -314,7 +314,7 @@ function LandingPage({ onLaunch }) {
                     <div style={{
                         marginTop: '48px', display: 'flex', justifyContent: 'center', gap: '16px',
                         flexWrap: 'wrap', opacity: 0.5,
-                    }}>
+                    }} className="mobile-padding-sm">
                         {SUPPORTED_PLATFORMS.slice(0, 8).map((p, i) => (
                             <div key={p.id} className={`stagger-item stagger-${(i % 5) + 1}`} style={{
                                 padding: '8px', borderRadius: '10px',
@@ -498,7 +498,7 @@ function Dashboard() {
     };
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px' }} className="fade-in">
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 16px' }} className="fade-in mobile-padding-sm">
             <div className="dashboard-grid">
                 {/* Left Column - Input & Status */}
                 <div className="flex flex-col gap-6">
@@ -540,7 +540,7 @@ function Dashboard() {
                                     placeholder="Type or paste a video URL here..."
                                     autoComplete="off"
                                     spellCheck="false"
-                                    className="input-glow"
+                                    className="input-glow mobile-text-sm"
                                     style={{
                                         width: '100%', padding: '18px 110px 18px 20px',
                                         background: 'rgba(2, 6, 23, 0.6)',
@@ -698,7 +698,7 @@ function Dashboard() {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.5s ease-out' }}>
                             {/* Video Info Card */}
                             <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
-                                <div style={{
+                                <div className="mobile-h-auto" style={{
                                     height: '140px', position: 'relative',
                                     borderRadius: '16px 16px 0 0', overflow: 'hidden'
                                 }}>
@@ -737,7 +737,7 @@ function Dashboard() {
                                         }}
                                     />
                                     {/* Content Overlay */}
-                                    <div style={{ position: 'relative', height: '100%', padding: '24px', display: 'flex', gap: '24px', alignItems: 'center', zIndex: 10 }}>
+                                    <div className="mobile-stack mobile-padding-sm" style={{ position: 'relative', height: '100%', padding: '24px', display: 'flex', gap: '24px', alignItems: 'center', zIndex: 10 }}>
                                         <div style={{
                                             width: '80px', height: '80px', flexShrink: 0,
                                             borderRadius: '16px', overflow: 'hidden',

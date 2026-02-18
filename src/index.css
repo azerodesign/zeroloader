@@ -617,3 +617,37 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- RESPONSIVE UTILITIES --- */
+@media (max-width: 640px) {
+  .mobile-stack {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+  }
+
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  .mobile-padding-sm {
+    padding: 16px !important;
+  }
+
+  .mobile-text-sm {
+    font-size: 14px !important;
+  }
+
+  .mobile-h-auto {
+    height: auto !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .desktop-hidden {
+    display: none !important;
+  }
+}
