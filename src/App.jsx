@@ -74,8 +74,7 @@ export default function App() {
     if (view === 'splash') return <SplashScreen />;
 
     return (
-        <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}
-            className={`min-h-screen transition-colors duration-300 ${darkMode ? 'bg-[#030712] text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+        <div className="min-h-screen" style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: 'var(--zl-bg)', color: 'var(--zl-text-1)' }}>
 
             {/* Mesh background */}
             <div className="mesh-bg">
@@ -84,12 +83,8 @@ export default function App() {
                 <div className="orb orb-3"></div>
             </div>
 
-            {/* Dot grid */}
-            <div className="fixed inset-0 pointer-events-none" style={{
-                opacity: 0.012,
-                backgroundImage: 'radial-gradient(circle, #6366f1 1px, transparent 1px)',
-                backgroundSize: '32px 32px',
-            }}></div>
+            {/* Dot grid overlay */}
+            <div className="dot-grid"></div>
 
             <Navbar view={view} setView={setView} darkMode={darkMode} setDarkMode={setDarkMode} />
             <div className="relative" style={{ paddingTop: '60px' }}>
@@ -104,52 +99,56 @@ function Navbar({ view, setView, darkMode, setDarkMode }) {
     return (
         <nav style={{
             position: 'fixed', top: 0, width: '100%', zIndex: 50,
-            borderBottom: '1px solid rgba(255,255,255,0.05)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
-            background: 'rgba(2, 6, 23, 0.7)',
+            borderBottom: '1px solid rgba(192,76,253,0.08)',
+            backdropFilter: 'blur(4px)',
+            WebkitBackdropFilter: 'blur(4px)',
+            background: 'rgba(7, 3, 15, 0.75)',
         }}>
             <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }} className="mobile-padding-sm">
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '56px' }}>
                     {/* Logo */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }} onClick={() => setView('landing')}>
                         <div style={{
-                            background: 'linear-gradient(135deg, #6366f1, #9333ea)',
+                            background: 'linear-gradient(135deg, #7b2cbf, #C04CFD)',
                             padding: '6px', borderRadius: '10px',
-                            boxShadow: '0 4px 15px rgba(99,102,241,0.25)',
+                            boxShadow: '0 4px 15px rgba(192,76,253,0.3)',
                         }}>
                             <Zap className="text-white" size={16} />
                         </div>
-                        <span style={{ fontWeight: 800, fontSize: '18px', letterSpacing: '-0.02em' }}>
+                        <span style={{ fontWeight: 800, fontSize: '18px', letterSpacing: '-0.02em', color: 'var(--zl-text-1)' }}>
                             Zero<span style={{
-                                background: 'linear-gradient(135deg, #6366f1, #a855f7)',
+                                background: 'linear-gradient(135deg, #C04CFD, #d580ff)',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
                             }}>Loader</span>
                         </span>
                         <span style={{
                             fontSize: '9px', fontWeight: 700,
-                            background: 'rgba(99,102,241,0.12)', color: '#818cf8',
+                            background: 'rgba(192,76,253,0.10)', color: 'var(--zl-accent-light)',
                             padding: '2px 8px', borderRadius: '20px',
-                            border: '1px solid rgba(99,102,241,0.2)',
+                            border: '1px solid rgba(192,76,253,0.20)',
                         }}>V7</span>
                     </div>
                     {/* Right */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <button onClick={() => setDarkMode(!darkMode)} style={{
                             padding: '8px', borderRadius: '8px', background: 'transparent',
-                            border: 'none', cursor: 'pointer', color: '#94a3b8',
+                            border: 'none', cursor: 'pointer', color: 'var(--zl-text-2)',
                         }}>
                             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
                         </button>
                         {view === 'landing' && (
                             <button onClick={() => setView('dashboard')} className="mobile-hidden" style={{
-                                background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
+                                background: 'linear-gradient(135deg, #7b2cbf, #C04CFD)',
                                 color: 'white', padding: '8px 16px', borderRadius: '10px',
                                 fontWeight: 600, border: 'none', cursor: 'pointer', fontSize: '13px',
                                 display: 'flex', alignItems: 'center', gap: '6px',
-                                boxShadow: '0 4px 15px rgba(99,102,241,0.3)',
-                            }}>
+                                boxShadow: '0 4px 15px rgba(192,76,253,0.3)',
+                                transition: 'all 0.2s ease',
+                            }}
+                                onMouseOver={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(192,76,253,0.4)'; }}
+                                onMouseOut={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '0 4px 15px rgba(192,76,253,0.3)'; }}
+                            >
                                 Launch <ArrowRight size={14} />
                             </button>
                         )}
@@ -164,7 +163,7 @@ function Navbar({ view, setView, darkMode, setDarkMode }) {
 function SplashScreen() {
     return (
         <div style={{
-            position: 'fixed', inset: 0, background: '#030712',
+            position: 'fixed', inset: 0, background: 'var(--zl-bg)',
             display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
             zIndex: 100,
         }}>
@@ -173,26 +172,27 @@ function SplashScreen() {
                 <div className="orb orb-1"></div>
                 <div className="orb orb-2"></div>
             </div>
+            <div className="dot-grid"></div>
 
             <div style={{ position: 'relative' }} className="float-anim">
                 {/* Outer pulsing ring */}
                 <div style={{
                     position: 'absolute', inset: '-24px', borderRadius: '50%',
-                    border: '1px solid rgba(99,102,241,0.15)',
+                    border: '1px solid rgba(192,76,253,0.15)',
                 }} className="glow-ring"></div>
                 {/* Inner pulsing ring */}
                 <div style={{
                     position: 'absolute', inset: '-12px', borderRadius: '50%',
-                    border: '1px solid rgba(168,85,247,0.1)',
-                }} className="pulse-glow"></div>
+                    border: '1px solid rgba(213,128,255,0.10)',
+                }} className="glow-pulse"></div>
                 {/* Icon */}
                 <div style={{
                     position: 'relative',
-                    background: 'linear-gradient(135deg, #4f46e5, #7c3aed, #9333ea)',
+                    background: 'linear-gradient(135deg, #7b2cbf, #C04CFD, #d580ff)',
                     padding: '20px', borderRadius: '24px',
-                    boxShadow: '0 20px 60px rgba(99,102,241,0.35), inset 0 1px 0 rgba(255,255,255,0.15)',
+                    boxShadow: '0 20px 60px rgba(192,76,253,0.40), inset 0 1px 0 rgba(255,255,255,0.20)',
                 }}>
-                    <Zap size={44} className="text-white" style={{ filter: 'drop-shadow(0 2px 8px rgba(255,255,255,0.3))' }} />
+                    <Zap size={44} className="text-white" style={{ filter: 'drop-shadow(0 2px 10px rgba(255,255,255,0.35))' }} />
                 </div>
             </div>
 
@@ -203,26 +203,26 @@ function SplashScreen() {
                 Zero<span className="gradient-text" style={{ letterSpacing: '0.12em' }}>Loader</span>
                 <span style={{
                     fontSize: '10px', verticalAlign: 'top',
-                    background: 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(168,85,247,0.3))',
-                    color: '#c4b5fd', padding: '2px 10px', borderRadius: '8px', marginLeft: '10px',
+                    background: 'rgba(192,76,253,0.12)',
+                    color: 'var(--zl-accent-light)', padding: '2px 10px', borderRadius: '8px', marginLeft: '10px',
                     letterSpacing: 'normal', fontWeight: 700,
-                    border: '1px solid rgba(99,102,241,0.2)',
+                    border: '1px solid rgba(192,76,253,0.22)',
                 }}>V7</span>
             </h1>
 
             <div style={{
                 marginTop: '28px', width: '200px', height: '3px',
-                background: 'rgba(30, 41, 59, 0.6)', borderRadius: '99px', overflow: 'hidden',
+                background: 'rgba(255,255,255,0.06)', borderRadius: '99px', overflow: 'hidden',
             }}>
                 <div style={{
                     height: '100%',
-                    background: 'linear-gradient(90deg, #4f46e5, #a855f7, #ec4899)',
+                    background: 'linear-gradient(90deg, #7b2cbf, #C04CFD, #d580ff, #9d4edd)',
                     borderRadius: '99px',
-                    animation: 'loading 1.8s ease-in-out forwards',
+                    animation: 'loading-bar 1.8s ease-in-out forwards',
                 }}></div>
             </div>
             <p style={{
-                marginTop: '14px', fontSize: '10px', color: '#475569',
+                marginTop: '14px', fontSize: '10px', color: 'var(--zl-text-3)',
                 letterSpacing: '0.15em', fontFamily: "'JetBrains Mono', monospace", fontWeight: 500,
             }}>
                 INITIALIZING ENGINE...
@@ -247,28 +247,35 @@ function LandingPage({ onLaunch }) {
                     {/* Badge */}
                     <div className="slide-up badge-gradient" style={{
                         display: 'inline-flex', alignItems: 'center', gap: '8px',
-                        padding: '8px 18px', borderRadius: '99px',
-                        color: '#818cf8', fontSize: '12px', fontWeight: 600,
-                        marginBottom: '40px',
+                        padding: '6px 16px', borderRadius: '99px',
+                        background: 'rgba(192, 76, 253, 0.05)',
+                        border: '1px solid rgba(255, 255, 255, 0.08)',
+                        color: 'var(--zl-text-2)', fontSize: '11px', fontWeight: 500,
+                        letterSpacing: '0.02em',
+                        marginBottom: '48px',
                     }}>
-                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#4ade80' }} className="pulse-glow"></span>
-                        Multi-Engine API Online • 13 Platforms
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#C04CFD', boxShadow: '0 0 8px #C04CFD' }} className="animate-pulse"></span>
+                        <span style={{ opacity: 0.9 }}>Multi-Engine API Online</span>
+                        <span style={{ opacity: 0.4, margin: '0 4px' }}>|</span>
+                        <span style={{ opacity: 0.9 }}>13 Platforms</span>
                     </div>
 
                     {/* Heading */}
                     <h1 className="slide-up-delay-1" style={{
                         fontSize: 'clamp(42px, 6vw, 76px)',
                         fontWeight: 900, letterSpacing: '-0.04em',
-                        lineHeight: 1.05, marginBottom: '24px',
+                        lineHeight: 1.05, marginBottom: '24px', color: 'var(--zl-text-1)',
                     }}>
                         All in One<br />
                         <span className="gradient-text">Downloader</span>
                     </h1>
 
                     {/* Subtitle */}
+                    {/* Subtitle */}
                     <p className="slide-up-delay-2" style={{
-                        fontSize: '18px', color: '#64748b', maxWidth: '450px',
-                        margin: '0 auto 48px', lineHeight: 1.7, fontWeight: 500,
+                        fontSize: '18px', color: 'var(--zl-text-2)', maxWidth: '480px',
+                        margin: '0 auto 56px', lineHeight: 1.8, fontWeight: 400,
+                        letterSpacing: '0.01em',
                     }}>
                         Extract HD video & audio instantly.<br />
                         Fast. Clean. No limits.
@@ -276,21 +283,40 @@ function LandingPage({ onLaunch }) {
 
                     {/* CTA Button */}
                     <div className="slide-up-delay-3">
-                        <button onClick={onLaunch} className="shimmer-button" style={{
-                            display: 'inline-flex', alignItems: 'center', gap: '12px',
-                            padding: '18px 40px',
-                            background: 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                            color: 'white', borderRadius: '16px', fontWeight: 700,
-                            fontSize: '17px', border: 'none', cursor: 'pointer',
-                            boxShadow: '0 20px 60px rgba(99,102,241,0.35)',
-                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                            position: 'relative',
-                        }}
-                            onMouseOver={e => { e.currentTarget.style.transform = 'scale(1.04) translateY(-2px)'; e.currentTarget.style.boxShadow = '0 28px 70px rgba(99,102,241,0.45)'; }}
-                            onMouseOut={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 20px 60px rgba(99,102,241,0.35)'; }}
-                        >
-                            <Zap size={20} /> Start Engine <ArrowRight size={18} />
-                        </button>
+                        <div className="slide-up-delay-3">
+                            <button onClick={onLaunch} className="group" style={{
+                                display: 'inline-flex', alignItems: 'center', gap: '12px',
+                                padding: '16px 40px',
+                                background: 'rgba(9, 9, 11, 0.6)',
+                                backdropFilter: 'blur(12px)',
+                                border: '1px solid rgba(192, 76, 253, 0.3)',
+                                color: 'white', borderRadius: '99px', fontWeight: 600,
+                                fontSize: '16px', cursor: 'pointer',
+                                boxShadow: '0 0 20px rgba(192, 76, 253, 0.15), inset 0 0 0 1px rgba(192, 76, 253, 0.1)',
+                                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                                position: 'relative', overflow: 'hidden',
+                            }}
+                                onMouseOver={e => {
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                    e.currentTarget.style.boxShadow = '0 0 30px rgba(192, 76, 253, 0.25), inset 0 0 0 1px rgba(192, 76, 253, 0.3)';
+                                    e.currentTarget.style.borderColor = '#d580ff';
+                                }}
+                                onMouseOut={e => {
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                    e.currentTarget.style.boxShadow = '0 0 20px rgba(192, 76, 253, 0.15), inset 0 0 0 1px rgba(192, 76, 253, 0.1)';
+                                    e.currentTarget.style.borderColor = 'rgba(192, 76, 253, 0.3)';
+                                }}
+                            >
+                                <span style={{
+                                    position: 'absolute', inset: 0,
+                                    background: 'linear-gradient(90deg, transparent, rgba(192, 76, 253, 0.1), transparent)',
+                                    transform: 'translateX(-100%)', transition: 'transform 0.5s ease',
+                                }} className="shimmer-effect"></span>
+                                <Zap size={18} className="text-purple-400 group-hover:text-purple-300 transition-colors" />
+                                Start Engine
+                                <ArrowRight size={16} className="text-zinc-400 group-hover:text-white transition-colors group-hover:translate-x-1 duration-300" />
+                            </button>
+                        </div>
                     </div>
 
                     {/* Feature pills */}
@@ -298,14 +324,14 @@ function LandingPage({ onLaunch }) {
                         {['HD Quality', 'No Watermark', 'MP3 Audio', 'Fast API', '13+ Platforms'].map((feat, i) => (
                             <div key={i} className={`stagger-item stagger-${i + 1}`} style={{
                                 padding: '8px 16px', borderRadius: '99px',
-                                fontSize: '12px', fontWeight: 600,
-                                background: 'rgba(15, 23, 42, 0.6)',
+                                fontSize: '12px', fontWeight: 500,
+                                background: 'rgba(6, 182, 212, 0.03)',
                                 backdropFilter: 'blur(12px)',
-                                border: '1px solid rgba(255, 255, 255, 0.06)',
+                                border: '1px solid rgba(255, 255, 255, 0.05)',
                                 display: 'flex', alignItems: 'center', gap: '6px',
-                                color: '#94a3b8',
+                                color: 'var(--zl-text-3)',
                             }}>
-                                <CheckCircle2 size={12} style={{ color: '#4ade80' }} /> {feat}
+                                <CheckCircle2 size={12} className="text-cyan-500/80" /> {feat}
                             </div>
                         ))}
                     </div>
@@ -313,19 +339,28 @@ function LandingPage({ onLaunch }) {
                     {/* Platform icon strip */}
                     <div style={{
                         marginTop: '48px', display: 'flex', justifyContent: 'center', gap: '16px',
-                        flexWrap: 'wrap', opacity: 0.5,
+                        flexWrap: 'wrap',
                     }} className="mobile-padding-sm">
                         {SUPPORTED_PLATFORMS.slice(0, 8).map((p, i) => (
-                            <div key={p.id} className={`stagger-item stagger-${(i % 5) + 1}`} style={{
-                                padding: '8px', borderRadius: '10px',
-                                background: 'rgba(255,255,255,0.03)',
-                                border: '1px solid rgba(255,255,255,0.05)',
-                                transition: 'all 0.3s ease',
+                            <div key={p.id} className={`stagger-item stagger-${(i % 5) + 1} group`} style={{
+                                padding: '10px', borderRadius: '12px',
+                                background: 'transparent',
+                                border: '1px solid transparent',
+                                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                cursor: 'default',
                             }}
-                                onMouseOver={e => { e.currentTarget.style.opacity = '1'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                                onMouseOut={e => { e.currentTarget.style.opacity = ''; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; e.currentTarget.style.transform = ''; }}
+                                onMouseOver={e => {
+                                    e.currentTarget.style.background = 'rgba(192, 76, 253, 0.05)';
+                                    e.currentTarget.style.border = '1px solid rgba(192, 76, 253, 0.15)';
+                                    e.currentTarget.style.transform = 'translateY(-2px)';
+                                }}
+                                onMouseOut={e => {
+                                    e.currentTarget.style.background = 'transparent';
+                                    e.currentTarget.style.border = '1px solid transparent';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }}
                             >
-                                <p.icon size={18} className={p.color} />
+                                <p.icon size={20} className={`${p.color} opacity-40 grayscale group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-300`} />
                             </div>
                         ))}
                     </div>
@@ -518,14 +553,14 @@ function Dashboard() {
                                 textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '10px',
                                 marginLeft: '4px',
                             }}>
-                                <LinkIcon size={13} style={{ color: '#818cf8' }} />
+                                <LinkIcon size={13} style={{ color: '#C04CFD' }} />
                                 Enter or Paste URL
                                 {platform && (
                                     <span style={{
                                         display: 'inline-flex', alignItems: 'center', gap: '5px',
                                         marginLeft: '8px', padding: '2px 10px', borderRadius: '99px',
-                                        background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)',
-                                        color: '#a5b4fc', fontSize: '10px', fontWeight: 700, textTransform: 'none',
+                                        background: 'rgba(192,76,253,0.1)', border: '1px solid rgba(192,76,253,0.2)',
+                                        color: '#d580ff', fontSize: '10px', fontWeight: 700, textTransform: 'none',
                                     }}>
                                         <platform.icon size={12} className={platform.color} /> {platform.name}
                                     </span>
@@ -551,9 +586,9 @@ function Dashboard() {
                                         letterSpacing: '-0.01em',
                                     }}
                                     onFocus={(e) => {
-                                        e.target.style.borderColor = '#6366f1';
+                                        e.target.style.borderColor = '#C04CFD';
                                         e.target.style.background = 'rgba(2, 6, 23, 0.85)';
-                                        e.target.style.boxShadow = '0 0 0 4px rgba(99,102,241,0.1), 0 8px 32px rgba(99,102,241,0.08)';
+                                        e.target.style.boxShadow = '0 0 0 4px rgba(192,76,253,0.12), 0 8px 32px rgba(192,76,253,0.10)';
                                     }}
                                     onBlur={(e) => {
                                         e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
@@ -588,14 +623,14 @@ function Dashboard() {
                                         title="Paste from clipboard"
                                         style={{
                                             height: '30px', padding: '0 12px', borderRadius: '8px',
-                                            background: 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.12))',
-                                            color: '#a5b4fc', border: '1px solid rgba(99,102,241,0.2)',
+                                            background: 'rgba(192,76,253,0.10)',
+                                            color: 'var(--zl-accent-light)', border: '1px solid rgba(192,76,253,0.20)',
                                             cursor: 'pointer', fontSize: '10px', fontWeight: 700,
                                             display: 'flex', alignItems: 'center', gap: '5px',
                                             transition: 'all 0.2s', letterSpacing: '0.04em',
                                         }}
-                                        onMouseOver={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(168,85,247,0.2))'; e.currentTarget.style.color = 'white'; }}
-                                        onMouseOut={e => { e.currentTarget.style.background = 'linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.12))'; e.currentTarget.style.color = '#a5b4fc'; }}
+                                        onMouseOver={e => { e.currentTarget.style.background = 'rgba(192,76,253,0.20)'; e.currentTarget.style.color = 'white'; }}
+                                        onMouseOut={e => { e.currentTarget.style.background = 'rgba(192,76,253,0.10)'; e.currentTarget.style.color = 'var(--zl-accent-light)'; }}
                                     >
                                         <Sparkles size={11} /> PASTE
                                     </button>
@@ -618,17 +653,21 @@ function Dashboard() {
                             style={{
                                 width: '100%', padding: '16px',
                                 background: loading || !url
-                                    ? 'linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(124, 58, 237, 0.15))'
-                                    : 'linear-gradient(135deg, #4f46e5, #7c3aed)',
-                                color: loading || !url ? 'rgba(255,255,255,0.3)' : 'white',
+                                    ? 'rgba(192,76,253,0.08)'
+                                    : 'linear-gradient(135deg, #7b2cbf, #C04CFD, #d580ff)',
+                                backgroundSize: '200% 100%',
+                                color: loading || !url ? 'rgba(255,255,255,0.25)' : 'white',
                                 borderRadius: '14px', fontSize: '15px', fontWeight: 700,
-                                border: 'none', cursor: loading || !url ? 'not-allowed' : 'pointer',
+                                border: loading || !url ? '1px solid rgba(192,76,253,0.12)' : 'none',
+                                cursor: loading || !url ? 'not-allowed' : 'pointer',
                                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-                                boxShadow: loading || !url ? 'none' : '0 10px 40px -10px rgba(99,102,241,0.5)',
+                                boxShadow: loading || !url ? 'none' : '0 8px 32px rgba(192,76,253,0.35)',
                                 position: 'relative', overflow: 'hidden',
-                                letterSpacing: '0.02em',
+                                letterSpacing: '0.03em',
                             }}
+                            onMouseOver={e => { if (!loading && url) { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 14px 40px rgba(192,76,253,0.45)'; } }}
+                            onMouseOut={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = loading || !url ? 'none' : '0 8px 32px rgba(192,76,253,0.35)'; }}
                         >
                             {loading ? (
                                 <>
@@ -647,7 +686,7 @@ function Dashboard() {
                     {/* Activity Logs Panel */}
                     <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                         <CardHeader
-                            icon={<Activity size={18} className="text-indigo-400" />}
+                            icon={<Activity size={18} className="text-fuchsia-400" />}
                             title="Activity Logs"
                             subtitle="Process Streams"
                         />
@@ -803,13 +842,13 @@ function Dashboard() {
                                             if (pid === 'twitch') return `https://www.twitch.tv/${uid}`;
                                             return '#';
                                         })()} target="_blank" rel="noopener noreferrer" style={{
-                                            padding: '6px 12px', borderRadius: '8px', background: 'rgba(99,102,241,0.1)',
-                                            color: '#818cf8', textDecoration: 'none', fontSize: '11px', fontWeight: 700,
+                                            padding: '6px 12px', borderRadius: '8px', background: 'rgba(192,76,253,0.08)',
+                                            color: 'var(--zl-accent-light)', textDecoration: 'none', fontSize: '11px', fontWeight: 700,
                                             display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.2s',
-                                            border: '1px solid rgba(99,102,241,0.2)'
+                                            border: '1px solid rgba(192,76,253,0.20)'
                                         }}
-                                            onMouseOver={e => e.currentTarget.style.background = 'rgba(99,102,241,0.2)'}
-                                            onMouseOut={e => e.currentTarget.style.background = 'rgba(99,102,241,0.1)'}
+                                            onMouseOver={e => e.currentTarget.style.background = 'rgba(192,76,253,0.18)'}
+                                            onMouseOut={e => e.currentTarget.style.background = 'rgba(192,76,253,0.08)'}
                                         >
                                             View <ExternalLink size={12} />
                                         </a>
@@ -845,7 +884,7 @@ function Dashboard() {
                     {/* Dynamic Engine Info Card */}
                     <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                         <CardHeader
-                            icon={<Cpu size={18} className="text-blue-400" />}
+                            icon={<Cpu size={18} className="text-purple-400" />}
                             title="Engine Info"
                         />
                         <div className="space-y-4">
@@ -867,7 +906,7 @@ function Dashboard() {
                     {/* System Status */}
                     <div className="glass-card" style={{ borderRadius: '20px', padding: '24px' }}>
                         <CardHeader
-                            icon={<Activity size={18} className="text-indigo-400" />}
+                            icon={<Activity size={18} className="text-fuchsia-400" />}
                             title="System Status"
                         />
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -888,13 +927,18 @@ function Dashboard() {
                             {SUPPORTED_PLATFORMS.map((p) => (
                                 <div key={p.id}
                                     className={`text-[11px] flex items-center gap-1.5 transition-all duration-300 p-1.5 rounded-lg border ${platform?.id === p.id
-                                        ? 'bg-blue-500/10 border-blue-500/30 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]'
+                                        ? 'text-white'
                                         : 'border-transparent text-gray-400'
                                         }`}
+                                    style={platform?.id === p.id ? {
+                                        background: 'rgba(192,76,253,0.10)',
+                                        borderColor: 'rgba(192,76,253,0.30)',
+                                        boxShadow: '0 0 15px rgba(192,76,253,0.25)'
+                                    } : {}}
                                 >
                                     <p.icon size={12} className={platform?.id === p.id ? p.color : 'text-gray-600'} />
                                     {p.name}
-                                    {platform?.id === p.id && <div className="w-1.5 h-1.5 rounded-full bg-green-400 ml-auto animate-pulse" />}
+                                    {platform?.id === p.id && <div className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 ml-auto animate-pulse" />}
                                 </div>
                             ))}
                         </div>
@@ -945,7 +989,9 @@ function Dashboard() {
                                         </div>
                                         <button
                                             onClick={() => setData(item)}
-                                            style={{ padding: '4px', borderRadius: '6px', background: 'rgba(99,102,241,0.1)', color: '#818cf8', border: 'none', cursor: 'pointer' }}
+                                            style={{ padding: '4px', borderRadius: '6px', background: 'rgba(192,76,253,0.10)', color: 'var(--zl-accent-light)', border: 'none', cursor: 'pointer', transition: 'all 0.2s' }}
+                                            onMouseOver={e => { e.currentTarget.style.background = 'rgba(192,76,253,0.20)'; }}
+                                            onMouseOut={e => { e.currentTarget.style.background = 'rgba(192,76,253,0.10)'; }}
                                         >
                                             <ExternalLink size={12} />
                                         </button>
@@ -956,7 +1002,7 @@ function Dashboard() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }
 
@@ -968,7 +1014,7 @@ function DownloadCard({ fmt, index }) {
         ? { bg: 'rgba(236,72,153,0.08)', hover: 'rgba(236,72,153,0.15)', text: '#f472b6', border: 'rgba(236,72,153,0.3)' }
         : fmt.quality.includes('HD')
             ? { bg: 'rgba(245,158,11,0.08)', hover: 'rgba(245,158,11,0.15)', text: '#fbbf24', border: 'rgba(245,158,11,0.3)' }
-            : { bg: 'rgba(99,102,241,0.08)', hover: 'rgba(99,102,241,0.15)', text: '#818cf8', border: 'rgba(99,102,241,0.3)' };
+            : { bg: 'rgba(192,76,253,0.08)', hover: 'rgba(192,76,253,0.15)', text: 'var(--zl-accent-light)', border: 'rgba(192,76,253,0.30)' };
 
     return (
         <a
@@ -1017,7 +1063,7 @@ function DownloadCard({ fmt, index }) {
             </div>
             <div style={{
                 opacity: hover ? 1 : 0, transform: hover ? 'translateX(0)' : 'translateX(8px)',
-                transition: 'all 0.25s ease', color: '#818cf8',
+                transition: 'all 0.25s ease', color: 'var(--zl-accent-light)',
             }}>
                 <Download size={16} />
             </div>
@@ -1043,9 +1089,9 @@ function CardHeader({ icon, title, subtitle, loading }) {
                 </div>
             </div>
             {loading && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'rgba(99,102,241,0.08)', borderRadius: '99px', border: '1px solid rgba(99,102,241,0.15)' }}>
-                    <Loader2 size={12} className="animate-spin text-indigo-400" />
-                    <span style={{ fontSize: '10px', fontWeight: 700, color: '#818cf8', letterSpacing: '0.05em' }}>PROCESSING</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'var(--zl-accent-dim)', borderRadius: '99px', border: '1px solid var(--zl-accent-border)' }}>
+                    <Loader2 size={12} className="animate-spin" style={{ color: 'var(--zl-accent)' }} />
+                    <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--zl-accent-light)', letterSpacing: '0.05em' }}>PROCESSING</span>
                 </div>
             )}
         </div>

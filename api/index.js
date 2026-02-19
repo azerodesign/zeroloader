@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import youtubedl from 'youtube-dl-exec';
+import { instagramGetUrl } from 'instagram-url-direct';
 import { existsSync } from 'fs';
 import { resolve as pathResolve } from 'path';
 
@@ -773,32 +774,62 @@ async function extractDiscord(fileUrl) {
 // EXTRACTOR: Instagram — yt-dlp + igram fallback (Phase 4)
 // ============================================================
 
+async function extractInstagramIgram(videoUrl) {
+    // instagram-url-direct — npm pkg, no auth required, serves muxed CDN video URLs
+    const data = await instagramGetUrl(videoUrl);
+    if (!data || !data.url_list || data.url_list.length === 0) {
+        throw new Error('instagram-url-direct: no media found');
+    }
+    return data.url_list.map((url, i) => ({
+        type: "MP4",
+        quality: "Best",
+        url: url,
+        size: "ORIGINAL",
+        label: `Video ${i + 1} (+Audio)`,
+    }));
+}
+
 async function extractInstagram(videoUrl) {
-    // Layer 1: yt-dlp (best option — requires cookies.txt for Instagram)
+    // Layer 1: igram.world — no cookies/auth required, serves muxed video
+    console.log("  📸 [Instagram] Layer 1: igram.world (no-auth)...");
+    try {
+        const downloads = await extractInstagramIgram(videoUrl);
+        const hasVideo = downloads.some(f => f.type === "MP4");
+        if (hasVideo) {
+            return {
+                success: true,
+                platform: "instagram",
+                engine: "igram.world",
+                title: "Instagram Reel",
+                author: { nickname: "Instagram User", unique_id: "instagram", avatar: "" },
+                cover: "",
+                stats: { play_count: 0, digg_count: 0, comment_count: 0, share_count: 0 },
+                downloads,
+            };
+        }
+        console.log("  ⚠️ igram.world returned no video — trying yt-dlp...");
+    } catch (e) {
+        console.log(`  ⚠️ igram.world failed: ${e.message}`);
+    }
+
+    // Layer 2: yt-dlp (works best with cookies.txt for private content)
+    console.log("  📸 [Instagram] Layer 2: yt-dlp fallback...");
     try {
         const result = await extractYoutubeDL(videoUrl, "instagram");
-        result.engine = "yt-dlp";
-        return result;
+        const hasVideo = result.downloads?.some(f => f.type !== 'MP3');
+        if (hasVideo) {
+            result.engine = "yt-dlp";
+            return result;
+        }
+        console.log("  ⚠️ yt-dlp returned only audio (DASH-only reel).");
     } catch (e) {
         console.log(`  ⚠️ yt-dlp failed for Instagram: ${e.message}`);
     }
 
-    // Layer 2: Cobalt API (universal fallback)
-    console.log("  📸 [Instagram] Layer 2: Cobalt API...");
-    try {
-        const result = await extractCobalt(videoUrl, "instagram");
-        return result;
-    } catch (e) {
-        console.log(`  ⚠️ Cobalt failed for Instagram: ${e.message}`);
-    }
-
-    // All layers failed — provide actionable guidance
-    const hasCookies = HAS_COOKIES;
-    const errMsg = hasCookies
-        ? "Instagram extraction failed. Your cookies may be expired — try re-exporting cookies.txt from your browser."
-        : "Instagram requires authentication. Export cookies.txt from your browser (use a browser extension like 'Get cookies.txt LOCALLY') and place it in the project root folder.";
-    throw new Error(errMsg);
+    throw new Error("Instagram extraction failed. The reel may be private. Try logging in and re-exporting cookies.txt.");
 }
+
+
 
 // ============================================================
 // EXTRACTOR: Facebook — Mobile URL + og:video (Phase 5)
@@ -933,22 +964,56 @@ async function extractYoutubeDL(videoUrl, platformId = "unknown") {
         if (output.formats && Array.isArray(output.formats)) {
             const valid = output.formats.filter(f => f.url && f.protocol !== 'm3u8_native');
 
-            valid.forEach(f => {
-                let type = "MP4";
-                if (f.ext === "webm") type = "WEBM";
-                if (f.ext === "mp3" || (f.acodec !== 'none' && f.vcodec === 'none')) type = "MP3";
+            // Categorize by type
+            const muxed = valid.filter(f => f.vcodec && f.vcodec !== 'none' && f.acodec && f.acodec !== 'none');
+            const audioOnly = valid.filter(f => f.vcodec === 'none' && f.acodec && f.acodec !== 'none');
+            const videoOnly = valid.filter(f => f.acodec === 'none' && f.vcodec && f.vcodec !== 'none');
+            // videoOnly are DASH video-only streams — excluded from normal list, used as last resort only
 
-                const label = `${f.format_note || f.resolution || f.quality || "Unknown"} - ${f.ext}`;
+
+            // Build download list: muxed first (video+audio), then audio-only
+            const combined = [...muxed, ...audioOnly];
+
+            // If no muxed found (pure DASH platform), fall through to output.url below
+            combined.forEach(f => {
+                const isAudioOnly = f.vcodec === 'none';
+                let type = "MP4";
+                if (isAudioOnly) type = "MP3";
+                else if (f.ext === "webm") type = "WEBM";
+
+                const qualityNote = f.format_note || f.resolution || f.quality || "Unknown";
+                const ext = f.ext || "mp4";
+                const audioTag = isAudioOnly ? "" : " (+Audio)";
+                const label = `${qualityNote}${audioTag} - ${ext}`;
                 const size = f.filesize ? formatBytes(f.filesize) : (f.filesize_approx ? `~${formatBytes(f.filesize_approx)}` : "Unknown");
 
                 formats.push({
                     type: type.toUpperCase(),
-                    quality: f.height ? `${f.height}p` : "Best",
+                    quality: f.height ? `${f.height}p` : (isAudioOnly ? "Audio" : "Best"),
                     url: f.url,
                     size: size,
                     label: label
                 });
             });
+
+            // Last resort: if no muxed formats exist at all (pure DASH platform),
+            // surface the best video-only stream with a clear [No Audio] label
+            const hasVideoFormat = formats.some(f => f.type !== 'MP3');
+            if (!hasVideoFormat && videoOnly.length > 0) {
+                console.log(`  ⚠️ No muxed formats found — surfacing top DASH video-only as fallback`);
+                // Take only the best quality video-only format
+                const best = videoOnly.sort((a, b) => (b.height || 0) - (a.height || 0)).slice(0, 1);
+                best.forEach(f => {
+                    const size = f.filesize ? formatBytes(f.filesize) : (f.filesize_approx ? `~${formatBytes(f.filesize_approx)}` : "Unknown");
+                    formats.push({
+                        type: "MP4",
+                        quality: f.height ? `${f.height}p` : "Best",
+                        url: f.url,
+                        size: size,
+                        label: `${f.format_note || f.resolution || 'Best'} [No Audio] - ${f.ext || 'mp4'}`
+                    });
+                });
+            }
         }
 
         if (formats.length === 0 && output.url) {
